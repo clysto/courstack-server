@@ -1,0 +1,14 @@
+starlette
+sqlalchemy
+alembic
+PyJWT
+marshmallow
+uvicorn
+psycopg2
+
+# dev dependencies
+flake8
+black
+pre-commit
+pep8-naming
+isort
