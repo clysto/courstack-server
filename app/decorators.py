@@ -6,8 +6,9 @@ from marshmallow.exceptions import ValidationError
 from starlette.exceptions import HTTPException
 
 from app.db import Session
+from .auth.models import User
 
-from .exceptions import BodyValidationException
+from .exceptions import BodyValidationException, UnauthorizedException
 
 
 def body(name, schema):
@@ -39,9 +40,43 @@ def db():
         async def wrapper(*args, **kwargs):
 
             if iscoroutinefunction(func):
-                return await func(db_session=session, **kwargs)
+                response = await func(db_session=session, **kwargs)
             else:
-                return func(db_session=session, **kwargs)
+                response = func(db_session=session, **kwargs)
+            session.close()
+            return response
+
+        return wrapper
+
+    return decorator
+
+
+def with_user(detail=False, teacher=False, student=False):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(request, **kwargs):
+
+            user = request.user
+
+            if (
+                user.is_authenticated
+                and (teacher is False or user.is_teacher == teacher)
+                and (student is False or user.is_student == student)
+            ):
+                if detail:
+                    with Session() as session:
+                        user = (
+                            session.query(User)
+                            .filter(User.username == user.username)
+                            .one()
+                        )
+
+                if iscoroutinefunction(func):
+                    return await func(user=user, **kwargs)
+                else:
+                    return func(user=user, **kwargs)
+            else:
+                raise UnauthorizedException
 
         return wrapper
 

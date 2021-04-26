@@ -16,12 +16,13 @@ def http_exception(request, exc):
 
 def body_validation_exception(request, exc):
     return JSONResponse(
-        {"detail": exc.detail, "data": exc.data, "errors": exc.errors},
+        {"status_code": exc.status_code, "detail": exc.detail, "errors": exc.errors},
         status_code=exc.status_code,
     )
 
 
 def api_exception(request, exc):
     return JSONResponse(
-        {"detail": exc.detail, "message": exc.message}, status_code=exc.status_code
+        {"status_code": exc.status_code, "detail": exc.detail},
+        status_code=exc.status_code,
     )

@@ -5,6 +5,8 @@ from sqlalchemy import engine_from_config, pool
 
 from app.db import Base
 
+import app.auth.models
+
 config = context.config
 fileConfig(config.config_file_name)
 target_metadata = Base.metadata

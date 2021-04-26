@@ -5,7 +5,7 @@ from app.conf import settings
 
 DATABASE_URL = settings.DATABASE_URL = "postgresql://localhost/courstack"
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 
 Base = declarative_base()
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, autoflush=False)
