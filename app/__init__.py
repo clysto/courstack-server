@@ -1,21 +1,20 @@
+import jwt
+from jwt.exceptions import DecodeError, InvalidSignatureError
 from starlette.applications import Starlette
 from starlette.authentication import (
+    AuthCredentials,
     AuthenticationBackend,
     BaseUser,
     UnauthenticatedUser,
-    AuthCredentials,
 )
 from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
-from jwt.exceptions import InvalidSignatureError, DecodeError
 
 from .conf import settings
 from .exceptions import APIException, BodyValidationException
 from .urls import routes
 from .views import api_exception, body_validation_exception, http_exception
-
-import jwt
 
 JWT_SECRET = settings.JWT_SECRET
 

@@ -23,6 +23,10 @@ class UserExistException(APIException):
     detail = "该用户已存在"
 
 
+class UserNotExistException(APIException):
+    detail = "该用户不存在"
+
+
 class PasswordIncorrectException(APIException):
     status_code = 401
     detail = "用户密码错误"

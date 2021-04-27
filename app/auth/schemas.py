@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, post_load
 
-from .models import Teacher, Student
+from .models import Student, Teacher
 
 
 class UserSchema(Schema):

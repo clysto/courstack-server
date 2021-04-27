@@ -1,13 +1,19 @@
 <p align="center">
-    <img alt="logo" src="https://github.com/clysto/courstack-server/blob/main/media/logo.png?raw=true" width="500" style>
+    <img alt="logo" src="https://github.com/clysto/courstack-server/blob/main/media/logo.png?raw=true" width="500">
 </p>
 
 ---
 
-## 开发
+## Development
 
-启动开发服务器
+start dev server:
 
 ```shell
 make dev
+```
+
+lint:
+
+```shell
+make lint
 ```

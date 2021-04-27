@@ -1,4 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db import Base
 
@@ -26,6 +27,7 @@ class Student(User):
 class Teacher(User):
     __tablename__ = "teacher"
     id = Column(Integer, ForeignKey("user.id"), primary_key=True)
+    courses = relationship("Course", back_populates="teacher")
 
     __mapper_args__ = {
         "polymorphic_identity": "teacher",

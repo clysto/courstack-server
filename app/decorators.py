@@ -6,8 +6,8 @@ from marshmallow.exceptions import ValidationError
 from starlette.exceptions import HTTPException
 
 from app.db import Session
-from .auth.models import User
 
+from .auth.models import User
 from .exceptions import BodyValidationException, UnauthorizedException
 
 
@@ -23,7 +23,7 @@ def body(name, schema):
                 raise BodyValidationException(exc)
 
             if iscoroutinefunction(func):
-                return await func(request=request, **{name: data})
+                return await func(request=request, **{name: data}, **kwargs)
             else:
                 return func(request=request, **{name: data}, **kwargs)
 
@@ -37,13 +37,12 @@ def db():
         session = Session()
 
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(request, **kwargs):
 
             if iscoroutinefunction(func):
-                response = await func(db_session=session, **kwargs)
+                response = await func(request=request, db_session=session, **kwargs)
             else:
-                response = func(db_session=session, **kwargs)
-            session.close()
+                response = func(request=request, db_session=session, **kwargs)
             return response
 
         return wrapper
@@ -64,17 +63,14 @@ def with_user(detail=False, teacher=False, student=False):
                 and (student is False or user.is_student == student)
             ):
                 if detail:
-                    with Session() as session:
-                        user = (
-                            session.query(User)
-                            .filter(User.username == user.username)
-                            .one()
-                        )
+                    user = (
+                        Session.query(User).filter(User.username == user.username).one()
+                    )
 
                 if iscoroutinefunction(func):
-                    return await func(user=user, **kwargs)
+                    return await func(request=request, user=user, **kwargs)
                 else:
-                    return func(user=user, **kwargs)
+                    return func(request=request, user=user, **kwargs)
             else:
                 raise UnauthorizedException
 

@@ -11,4 +11,8 @@ def include(urlconf_module):
     return sub_routes
 
 
-routes = [Route("/", views.root), Mount("/", routes=include("app.auth.urls"))]
+routes = [
+    Route("/", views.root),
+    Mount("/auth", routes=include("app.auth.urls")),
+    Mount("/core", routes=include("app.core.urls")),
+]
