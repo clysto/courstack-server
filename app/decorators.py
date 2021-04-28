@@ -1,3 +1,4 @@
+import re
 from functools import wraps
 from inspect import iscoroutinefunction
 from json.decoder import JSONDecodeError
@@ -73,6 +74,32 @@ def with_user(detail=False, teacher=False, student=False):
                     return func(request=request, user=user, **kwargs)
             else:
                 raise UnauthorizedException
+
+        return wrapper
+
+    return decorator
+
+
+def query(*args):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(request, **kwargs):
+            query_params = {}
+
+            for key in args:
+                matched = re.match(r"(int):(.+)", key)
+                if matched:
+                    key = matched[2]
+                if key in request.query_params:
+                    if matched and request.query_params[key].isdecimal():
+                        query_params[key] = int(request.query_params[key])
+                    elif not matched:
+                        query_params[key] = request.query_params[key]
+
+            if iscoroutinefunction(func):
+                return await func(request=request, **query_params, **kwargs)
+            else:
+                return func(request=request, **query_params, **kwargs)
 
         return wrapper
 

@@ -1,16 +1,18 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from starlette.responses import JSONResponse
 
-from app.decorators import body, db, with_user
+from app.decorators import body, db, query, with_user
+from app.util import mkpage
 
 from .models import Course
 from .schemas import course_schema
 
 
 @db()
-def get_all_courses(db_session: Session, **kwargs):
-    courses = db_session.query(Course).all()
-    return JSONResponse(course_schema.dump(courses, many=True))
+@query("int:page", "int:page_size")
+def get_all_courses(db_session: Session, page=1, page_size=10, **kwargs):
+    courses = db_session.query(Course).options(joinedload(Course.teacher))
+    return JSONResponse(mkpage(courses, course_schema, page, page_size))
 
 
 @with_user(teacher=True)

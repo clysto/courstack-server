@@ -1,0 +1,10 @@
+site_name: Courstack
+nav:
+  - Home: index.md
+theme: material
+repo_name: clysto/courstack-server
+repo_url: https://github.com/clysto/courstack-server
+edit_uri: ""
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences

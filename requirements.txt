@@ -12,3 +12,5 @@ black
 pre-commit
 pep8-naming
 isort
+mkdocs
+mkdocs-material
