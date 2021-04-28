@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from uuid import uuid4
+
+from sqlalchemy import ARRAY, Column, Date, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db import Base
@@ -15,5 +18,17 @@ class Course(Base):
     date_end = Column(Date)
 
 
-# class CourseSections(Base):
-#     pass
+class CourseSection(Base):
+    __tablename__ = "course_section"
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey("course.id"))
+    title = Column(String)
+    content = Column(String)
+    date = Column(Date)
+    attachments = Column(ARRAY(String, dimensions=1))
+
+
+class File(Base):
+    __tablename__ = "file"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    filename = Column(String)

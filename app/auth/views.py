@@ -4,12 +4,13 @@ from sqlalchemy.orm.session import Session
 from starlette.responses import JSONResponse
 
 from app.conf import settings
-from app.decorators import body, db, with_user
+from app.decorators import body, db, query, with_user
 from app.exceptions import (
     PasswordIncorrectException,
     UserExistException,
     UserNotExistException,
 )
+from app.util import mkpage
 
 from .models import User
 from .schemas import UserSchema, student_schema, teacher_schema, user_schema
@@ -64,3 +65,10 @@ def student_signup(student, db_session: Session, **kwargs):
 @with_user(detail=True)
 def get_current_user(user):
     return JSONResponse(user_schema.dump(user))
+
+
+@db()
+@query("int:page", "int:page_size")
+def get_all_users(db_session: Session, page=1, page_size=10, **kwargs):
+    users = db_session.query(User)
+    return JSONResponse(mkpage(users, user_schema, page, page_size))

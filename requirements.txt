@@ -5,6 +5,8 @@ PyJWT
 marshmallow
 uvicorn
 psycopg2
+python-multipart
+aiofiles
 
 # dev dependencies
 flake8

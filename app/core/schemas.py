@@ -18,4 +18,26 @@ class CourseSchema(Schema):
         return Course(**item)
 
 
+class CourseSectionSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    course_id = fields.Integer(dump_only=True)
+    title = fields.String(required=True)
+    content = fields.String(required=True)
+    date = fields.Date(required=True)
+    attachments = fields.Method("get_attachments")
+
+    def get_attachments(self, obj):
+        attachments = []
+        for attachment_id in obj.attachments:
+            attachments.append("http://localhost:8000/core/files/" + attachment_id)
+        return attachments
+
+
+class FileSchema(Schema):
+    id = fields.UUID()
+    filename = fields.String()
+
+
 course_schema = CourseSchema()
+course_section_schema = CourseSectionSchema()
+file_schema = FileSchema()

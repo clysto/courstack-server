@@ -18,4 +18,5 @@ routes = [
         ],
     ),
     Route("/current_user", views.get_current_user),
+    Route("/users", views.get_all_users),
 ]
