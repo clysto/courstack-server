@@ -24,7 +24,21 @@ class UserExistException(APIException):
 
 
 class UserNotExistException(APIException):
+    status_code = 404
     detail = "该用户不存在"
+
+
+class CourseNotFoundException(APIException):
+    status_code = 404
+    detail = "该课程不存在"
+
+    def __init__(self, course_id=None):
+        if course_id is not None:
+            self.detail = "课程%d不存在" % course_id
+
+
+class NotCourseOwnerException(APIException):
+    detail = "您不是该课程的创建者"
 
 
 class PasswordIncorrectException(APIException):

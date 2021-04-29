@@ -2,7 +2,7 @@ from marshmallow import Schema, fields, post_load
 
 from app.auth.schemas import TeacherSchema
 
-from .models import Course
+from .models import Course, CourseSection
 
 
 class CourseSchema(Schema):
@@ -24,13 +24,11 @@ class CourseSectionSchema(Schema):
     title = fields.String(required=True)
     content = fields.String(required=True)
     date = fields.Date(required=True)
-    attachments = fields.Method("get_attachments")
+    attachments = fields.List(fields.UUID, required=True)
 
-    def get_attachments(self, obj):
-        attachments = []
-        for attachment_id in obj.attachments:
-            attachments.append("http://localhost:8000/core/files/" + attachment_id)
-        return attachments
+    @post_load
+    def create_course_section(self, item, many, **kwargs):
+        return CourseSection(**item)
 
 
 class FileSchema(Schema):
