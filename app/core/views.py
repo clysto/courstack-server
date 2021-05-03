@@ -14,7 +14,14 @@ from app.exceptions import (
 )
 from app.util import course_or_exception, mkpage
 
-from .models import Course, CourseSection, File, SignInTask, SignInTaskRecord
+from .models import (
+    Course,
+    CourseSection,
+    File,
+    SignInTask,
+    SignInTaskRecord,
+    StudentCourseRecord,
+)
 from .schemas import (
     course_schema,
     course_section_schema,
@@ -43,6 +50,29 @@ def create_course(user, db_session: Session, course, **kwargs):
     db_session.commit()
     db_session.refresh(course)
     return JSONResponse(course_schema.dump(course))
+
+
+@db()
+@path_param()
+@with_user(student=True)
+def select_course(course_id, user, db_session: Session, **kwargs):
+    """
+    学生选课
+    """
+    course = course_or_exception(db_session, course_id)
+    record_exists = (
+        db_session.query(StudentCourseRecord)
+        .filter(
+            StudentCourseRecord.course_id == course_id,
+            StudentCourseRecord.student_id == user.id,
+        )
+        .first()
+    )
+    if record_exists is None:
+        record = StudentCourseRecord(student_id=user.id, course_id=course.id)
+        db_session.add(record)
+        db_session.commit()
+    return JSONResponse({"message": "选课成功"})
 
 
 @db()

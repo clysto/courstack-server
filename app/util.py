@@ -18,10 +18,10 @@ def mkpage(query, schema, page, page_size):
     }
 
 
-def course_or_exception(session: Session, course_id, teacher_id):
+def course_or_exception(session: Session, course_id, teacher_id=None):
     course = session.query(Course).filter(Course.id == course_id).first()
     if course is None:
         raise CourseNotFoundException(course_id)
-    if course.teacher_id != teacher_id:
+    if teacher_id is not None and course.teacher_id != teacher_id:
         raise NotCourseOwnerException
     return course

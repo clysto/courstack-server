@@ -26,6 +26,13 @@ class Course(Base):
     date_end = Column(Date)
 
 
+class StudentCourseRecord(Base):
+    __tablename__ = "student_course_record"
+
+    student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)
+    course_id = Column(Integer, ForeignKey("course.id"), primary_key=True)
+
+
 class CourseSection(Base):
     __tablename__ = "course_section"
     id = Column(Integer, primary_key=True)

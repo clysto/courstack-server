@@ -12,6 +12,7 @@ routes = [
         methods=["POST"],
     ),
     Route("/courses/{course_id:int}/sign_in_tasks", views.get_sign_in_task),
+    Route("/courses/{course_id:int}/select", views.select_course, methods=["POST"]),
     Route(
         "/courses/{course_id:int}/sections",
         views.create_course_section,
