@@ -104,3 +104,18 @@ def query(*args):
         return wrapper
 
     return decorator
+
+
+def path_param():
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(request, **kwargs):
+
+            if iscoroutinefunction(func):
+                return await func(request=request, **request.path_params, **kwargs)
+            else:
+                return func(request=request, **request.path_params, **kwargs)
+
+        return wrapper
+
+    return decorator

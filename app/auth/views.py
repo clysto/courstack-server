@@ -63,7 +63,7 @@ def student_signup(student, db_session: Session, **kwargs):
 
 
 @with_user(detail=True)
-def get_current_user(user):
+def get_current_user(user, **kwargs):
     return JSONResponse(user_schema.dump(user))
 
 

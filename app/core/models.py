@@ -1,6 +1,14 @@
 from uuid import uuid4
 
-from sqlalchemy import ARRAY, Column, Date, ForeignKey, Integer, String
+from sqlalchemy import (
+    ARRAY,
+    Column,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -32,3 +40,26 @@ class File(Base):
     __tablename__ = "file"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     filename = Column(String)
+
+
+class SignInTask(Base):
+    """
+    签到任务
+    """
+
+    __tablename__ = "sign_in_task"
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    time_start = Column(DateTime)
+    time_end = Column(DateTime)
+    course_id = Column(Integer, ForeignKey("course.id"))
+
+
+class SignInTaskRecord(Base):
+    """
+    签到记录
+    """
+
+    __tablename__ = "sign_in_task_record"
+    task_id = Column(Integer, ForeignKey("sign_in_task.id"), primary_key=True)
+    student_id = Column(Integer, ForeignKey("student.id"), primary_key=True)

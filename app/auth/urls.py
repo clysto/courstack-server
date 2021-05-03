@@ -11,8 +11,15 @@ routes = [
         ],
     ),
     Route(
-        "/signup",
+        "/teacher_signup",
         views.teacher_signup,
+        methods=[
+            "POST",
+        ],
+    ),
+    Route(
+        "/student_signup",
+        views.student_signup,
         methods=[
             "POST",
         ],

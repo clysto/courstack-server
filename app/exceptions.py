@@ -37,6 +37,19 @@ class CourseNotFoundException(APIException):
             self.detail = "课程%d不存在" % course_id
 
 
+class SignInTaskNotFoundException(APIException):
+    status_code = 404
+    detail = "该签到任务不存在"
+
+    def __init__(self, sign_in_task_id=None):
+        if sign_in_task_id is not None:
+            self.detail = "签到任务%d不存在" % sign_in_task_id
+
+
+class SignInTaskExpiredException(APIException):
+    detail = "该签到任务已过期"
+
+
 class NotCourseOwnerException(APIException):
     detail = "您不是该课程的创建者"
 

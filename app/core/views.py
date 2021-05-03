@@ -1,14 +1,26 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session, joinedload
 from starlette.responses import FileResponse, JSONResponse, Response
 
+from app.auth.models import Teacher
 from app.conf import settings
-from app.decorators import body, db, query, with_user
-from app.exceptions import CourseNotFoundException, NotCourseOwnerException
-from app.util import mkpage
+from app.decorators import body, db, path_param, query, with_user
+from app.exceptions import (
+    CourseNotFoundException,
+    NotCourseOwnerException,
+    SignInTaskExpiredException,
+    SignInTaskNotFoundException,
+)
+from app.util import course_or_exception, mkpage
 
-from ..auth.models import Teacher
-from .models import Course, CourseSection, File
-from .schemas import course_schema, course_section_schema, file_schema
+from .models import Course, CourseSection, File, SignInTask, SignInTaskRecord
+from .schemas import (
+    course_schema,
+    course_section_schema,
+    file_schema,
+    sign_in_task_schema,
+)
 
 UPLOAD_FOLDER = settings.UPLOAD_FOLDER
 
@@ -93,3 +105,43 @@ async def download_file(request, db_session: Session):
     if file is None:
         return Response(status_code=404)
     return FileResponse(UPLOAD_FOLDER / str(file.id), filename=file.filename)
+
+
+@db()
+@body("sign_in_task", sign_in_task_schema)
+@with_user(teacher=True)
+def create_sign_in_task(db_session: Session, sign_in_task, user, request):
+    course_id = request.path_params["course_id"]
+    course = course_or_exception(db_session, course_id, user.id)
+    sign_in_task.course_id = course.id
+    db_session.add(sign_in_task)
+    db_session.commit()
+    db_session.refresh(sign_in_task)
+    return JSONResponse(sign_in_task_schema.dump(sign_in_task))
+
+
+@db()
+@path_param()
+@query("int:page", "int:page_size")
+def get_sign_in_task(db_session: Session, course_id, page=1, page_size=10, **kwargs):
+    tasks = db_session.query(SignInTask).filter(SignInTask.course_id == course_id)
+    return JSONResponse(mkpage(tasks, sign_in_task_schema, page, page_size))
+
+
+@db()
+@path_param()
+@with_user(student=True)
+def course_sign_in(sign_in_task_id, db_session: Session, user, **kwargs):
+    task: SignInTask = (
+        db_session.query(SignInTask).filter(SignInTask.id == sign_in_task_id).first()
+    )
+    if task is None:
+        raise SignInTaskNotFoundException(sign_in_task_id)
+    if task.time_end < datetime.now():
+        raise SignInTaskExpiredException
+
+    # TODO: 检查该学生是否选了该课程
+    record = SignInTaskRecord(task_id=sign_in_task_id, student_id=user.id)
+    db_session.add(record)
+    db_session.commit()
+    return JSONResponse({"message": "签到成功"})
