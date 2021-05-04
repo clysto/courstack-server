@@ -17,3 +17,9 @@ lint:
 ```shell
 make lint
 ```
+
+format:
+
+```shell
+make format
+```
