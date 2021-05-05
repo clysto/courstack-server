@@ -25,4 +25,5 @@ routes = [
     ),
     Route("/files", views.upload_file, methods=["POST"]),
     Route("/files/{file_id:uuid}", views.download_file),
+    Route("/students/courses", views.get_student_courses),
 ]

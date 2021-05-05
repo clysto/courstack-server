@@ -41,6 +41,21 @@ def get_all_courses(db_session: Session, page=1, page_size=10, teacher=None, **k
     return JSONResponse(mkpage(courses, course_schema, page, page_size))
 
 
+@db()
+@with_user(student=True)
+@query("int:page", "int:page_size")
+def get_student_courses(user, db_session: Session, page=1, page_size=10, **kwargs):
+    """
+    学生选课列表
+    """
+    courses = (
+        db_session.query(Course)
+        .join(StudentCourseRecord)
+        .filter(StudentCourseRecord.student_id == user.id)
+    )
+    return JSONResponse(mkpage(courses, course_schema, page, page_size))
+
+
 @with_user(teacher=True)
 @body("course", course_schema)
 @db()
