@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from sqlalchemy import extract
 from sqlalchemy.orm import Session, joinedload
 from starlette.responses import FileResponse, JSONResponse, Response
 
@@ -39,6 +40,15 @@ def get_all_courses(db_session: Session, page=1, page_size=10, teacher=None, **k
     if teacher is not None:
         courses = courses.join(Teacher).filter(Teacher.username == teacher)
     return JSONResponse(mkpage(courses, course_schema, page, page_size))
+
+
+@db()
+@path_param()
+def get_course_detail(course_id, db_session, **kwargs):
+    course = db_session.query(Course).filter(Course.id == course_id).first()
+    if course is None:
+        raise CourseNotFoundException(course_id)
+    return JSONResponse(course_schema.dump(course))
 
 
 @db()
@@ -91,13 +101,24 @@ def select_course(course_id, user, db_session: Session, **kwargs):
 
 
 @db()
-@query("int:page", "int:page_size")
-def get_course_sections(db_session: Session, request, page=1, page_size=10, **kwargs):
+@query("int:year", "int:month")
+def get_course_sections(db_session: Session, request, year=None, month=None, **kwargs):
+    now = datetime.now()
+    if year is None:
+        year = now.year
+    if month is None:
+        month = now.month
     course_id = request.path_params["course_id"]
-    sections = db_session.query(CourseSection).filter(
-        CourseSection.course_id == course_id
+    sections = (
+        db_session.query(CourseSection)
+        .filter(
+            CourseSection.course_id == course_id,
+            extract("year", CourseSection.date) == year,
+            extract("month", CourseSection.date) == month,
+        )
+        .order_by(CourseSection.date)
     )
-    return JSONResponse(mkpage(sections, course_section_schema, page, page_size))
+    return JSONResponse(course_section_schema.dump(sections, many=True))
 
 
 @db()

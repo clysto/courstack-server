@@ -4,6 +4,7 @@ from . import views
 
 routes = [
     Route("/courses", views.get_all_courses),
+    Route("/courses/{course_id:int}", views.get_course_detail),
     Route("/courses", views.create_course, methods=["POST"]),
     Route("/courses/{course_id:int}/sections", views.get_course_sections),
     Route(

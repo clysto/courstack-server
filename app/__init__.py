@@ -10,6 +10,7 @@ from starlette.authentication import (
 from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 from .conf import settings
 from .exceptions import APIException, BodyValidationException
@@ -71,7 +72,15 @@ exception_handlers = {
     APIException: api_exception,
 }
 
-middleware = [Middleware(AuthenticationMiddleware, backend=BasicAuthBackend())]
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    ),
+    Middleware(AuthenticationMiddleware, backend=BasicAuthBackend()),
+]
 
 app = Starlette(
     debug=settings.DEBUG,
