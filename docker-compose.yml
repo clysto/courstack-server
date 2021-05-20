@@ -6,6 +6,7 @@ services:
     container_name: courstack-db
     volumes:
       - ./data/db:/var/lib/postgresql/data
+    environment:
       - POSTGRES_DB=courstack
       - POSTGRES_USER=courstack
       - POSTGRES_PASSWORD=courstack

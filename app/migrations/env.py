@@ -5,6 +5,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.db import Base
+from app.conf import settings
 
 model_modules = ["app.auth.models", "app.core.models"]
 
@@ -14,6 +15,8 @@ for mod in model_modules:
 config = context.config
 fileConfig(config.config_file_name)
 target_metadata = Base.metadata
+
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 
 def run_migrations_offline():

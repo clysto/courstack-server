@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 
 from app.conf import settings
 
-DATABASE_URL = settings.DATABASE_URL = "postgresql://localhost/courstack"
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
 
