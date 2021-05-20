@@ -1,15 +1,4 @@
-from uuid import uuid4
-
-from sqlalchemy import (
-    ARRAY,
-    Column,
-    Date,
-    DateTime,
-    ForeignKey,
-    Integer,
-    String,
-)
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.db import Base
@@ -24,6 +13,7 @@ class Course(Base):
     teacher = relationship("Teacher", back_populates="courses")
     date_start = Column(Date)
     date_end = Column(Date)
+    cover = Column(String)
 
 
 class StudentCourseRecord(Base):
@@ -40,12 +30,14 @@ class CourseSection(Base):
     title = Column(String)
     content = Column(String)
     date = Column(Date)
-    attachments = Column(ARRAY(String, dimensions=1))
+    attachments = relationship("Attachment")
 
 
-class File(Base):
-    __tablename__ = "file"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+class Attachment(Base):
+    __tablename__ = "attachment"
+    id = Column(Integer, primary_key=True)
+    section_id = Column(Integer, ForeignKey("course_section.id"))
+    original_filename = Column(String)
     filename = Column(String)
 
 

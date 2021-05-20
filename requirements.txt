@@ -7,6 +7,7 @@ uvicorn
 psycopg2
 python-multipart
 aiofiles
+qiniu
 
 # dev dependencies
 flake8

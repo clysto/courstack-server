@@ -37,6 +37,15 @@ class CourseNotFoundException(APIException):
             self.detail = "课程%d不存在" % course_id
 
 
+class CourseSectionNotFound(APIException):
+    status_code = 404
+    detail = "该课程日历不存在"
+
+    def __init__(self, course_section_id=None):
+        if course_section_id is not None:
+            self.detail = "课程日历%d不存在" % course_section_id
+
+
 class SignInTaskNotFoundException(APIException):
     status_code = 404
     detail = "该签到任务不存在"

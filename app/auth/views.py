@@ -10,7 +10,7 @@ from app.exceptions import (
     UserExistException,
     UserNotExistException,
 )
-from app.util import mkpage
+from app.utils import mkpage
 
 from .models import User
 from .schemas import UserSchema, student_schema, teacher_schema, user_schema

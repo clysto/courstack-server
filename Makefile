@@ -1,6 +1,9 @@
 dev:
 	uvicorn --reload app:app
 
+start:
+	uvicorn --no-access-log app:app
+
 format:
 	black . && isort .
 

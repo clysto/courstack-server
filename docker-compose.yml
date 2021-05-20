@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    container_name: courstack-db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - POSTGRES_DB=courstack
+      - POSTGRES_USER=courstack
+      - POSTGRES_PASSWORD=courstack
+  courstack-server:
+    image: clysto/courstack
+    container_name: courstack-server
+    environment:
+      - SETTINGS_MODULE=/data/settings.py
+    volumes:
+      - ./data/server:/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
